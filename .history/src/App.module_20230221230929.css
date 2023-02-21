@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+}
+
+.appHeader {
+  height: 100px;
+  border-bottom: solid 1px black;
+}
+
+.appFooter {
+  height: 100px;
+  border-bottom: solid 1px black;
+}
