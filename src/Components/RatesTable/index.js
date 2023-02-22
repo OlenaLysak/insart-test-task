@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 //Styling
 import styles from "./index.module.css";
@@ -12,45 +12,77 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-function createData(currency, buy, sell) {
-  return { currency, buy, sell };
-}
+//Constants
+import { REQUEST_OPTIONS } from "../../constants/";
 
-const rows = [
-  createData("USD/UAH", 159, 6.0),
-  createData("EUR/UAH", 237, 9.0),
-  createData("BTC/USD", 262, 16.0),
-];
+//Utils
+import { setUpUrl } from "../../utils/dataUtils";
 
 const RatesTable = () => {
+  const [usdToUah, setUsdToUah] = useState(0);
+  const [eurToUah, setEurToUah] = useState(0);
+  const [btcToUsd, setBtcToUsd] = useState(0);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const urlUsdToUah = setUpUrl("UAH", "USD");
+    const urlEurToUah = setUpUrl("UAH", "EUR");
+    const urlBtcToUsd = setUpUrl("USD", "BTC");
+
+    fetch(urlUsdToUah, REQUEST_OPTIONS)
+      .then((response) => response.json())
+      .then((data) => {
+        setUsdToUah(data.result.toFixed(2));
+      })
+      .catch((error) => setError(error.message));
+
+    fetch(urlEurToUah, REQUEST_OPTIONS)
+      .then((response) => response.json())
+      .then((data) => {
+        setEurToUah(data.result.toFixed(2));
+      })
+      .catch((error) => setError(error.message));
+
+    fetch(urlBtcToUsd, REQUEST_OPTIONS)
+      .then((response) => response.json())
+      .then((data) => {
+        setBtcToUsd(data.result.toFixed(2));
+      })
+      .catch((error) => setError(error.message));
+  }, []);
+
+  if (error) return <h1>{error}</h1>;
+
   return (
     <TableContainer component={Paper} sx={{ margin: "50px", maxWidth: 700 }}>
       <Table aria-label="simple table" className={styles.verticalDivider}>
         <TableHead>
           <TableRow>
             <TableCell>Currency/Current Date</TableCell>
-            <TableCell>Buy</TableCell>
-            <TableCell>Sell</TableCell>
+            <TableCell>Rate</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.currency}
-              sx={{
-                "&:last-child td, &:last-child th": {
-                  border: 0,
-                  borderRight: 'solid 1px lightgrey'
-                },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                {row.currency}
-              </TableCell>
-              <TableCell>{row.buy}</TableCell>
-              <TableCell>{row.sell}</TableCell>
-            </TableRow>
-          ))}
+          <TableRow>
+            <TableCell component="th" scope="row">
+              USD/UAH
+            </TableCell>
+            <TableCell>{usdToUah}</TableCell>
+          </TableRow>
+
+          <TableRow>
+            <TableCell component="th" scope="row">
+              EUR/UAH
+            </TableCell>
+            <TableCell>{eurToUah}</TableCell>
+          </TableRow>
+
+          <TableRow>
+            <TableCell component="th" scope="row">
+              BTC/USD
+            </TableCell>
+            <TableCell>{btcToUsd}</TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
