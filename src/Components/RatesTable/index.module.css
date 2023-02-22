@@ -1,0 +1,4 @@
+.verticalDivider th,
+td {
+  border-right: solid 1px lightgray;
+}
