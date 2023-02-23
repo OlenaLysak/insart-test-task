@@ -24,8 +24,18 @@ const Converter = () => {
   const [currencyTo, setCurrencyTo] = useState("");
   const [amount, setAmount] = useState("");
   const [showResult, setShowResult] = useState(false);
-  const [result, setResult] = useState(0);
+  const [result, setResult] = useState("loading");
   const [error, setError] = useState("");
+
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    if (counter === 5) {
+      setCounter(0);
+      setError("This was 5th api request!");
+    }
+    localStorage.setItem("counter", JSON.stringify(counter));
+  }, [counter]);
 
   useEffect(() => {
     const isResult =
@@ -34,6 +44,9 @@ const Converter = () => {
 
     if (isResult) {
       const currUrl = setUpUrl(currencyTo, currencyFrom, amount);
+
+      setCounter(counter + 1);
+
       fetch(currUrl, REQUEST_OPTIONS)
         .then((response) => response.json())
         .then((data) => {
